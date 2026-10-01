@@ -1,0 +1,22 @@
+name: Build APK
+on:
+  push:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: unzip -q RunTrack.zip
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 17 }
+      - uses: gradle/actions/setup-gradle@v3
+        with: { gradle-version: 8.5 }
+      - run: gradle assembleDebug --no-daemon
+        working-directory: RunTrack
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0
+          files: RunTrack/app/build/outputs/apk/debug/app-debug.apk
